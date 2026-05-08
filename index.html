@@ -126,6 +126,102 @@
         
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: var(--primary-color); }
+
+        /* ===== STYLE NÚT ON/OFF MỚI ===== */
+        .toggle-wrapper {
+            position: absolute;
+            top: -18px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(2, 12, 22, 0.98);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 20px;
+            padding: 5px 12px;
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+        }
+        .toggle-label {
+            font-size: 0.65em;
+            letter-spacing: 2px;
+            color: rgba(196, 250, 255, 0.7);
+            text-transform: uppercase;
+            font-weight: bold;
+            user-select: none;
+        }
+        .toggle-label.mode-label {
+            font-size: 0.7em;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        .toggle-label.mode-label.off { color: rgba(196, 250, 255, 0.5); }
+        .toggle-label.mode-label.on { color: #ff3c3c; text-shadow: 0 0 8px #ff3c3c; }
+
+        /* Switch toggle */
+        .switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px; width: 14px;
+            left: 2px; bottom: 2px;
+            background: rgba(196, 250, 255, 0.5);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .switch input:checked + .slider {
+            background: rgba(255, 60, 60, 0.2);
+            border-color: #ff3c3c;
+            box-shadow: 0 0 10px rgba(255, 60, 60, 0.5);
+        }
+        .switch input:checked + .slider:before {
+            transform: translateX(20px);
+            background: #ff3c3c;
+            box-shadow: 0 0 8px #ff3c3c;
+        }
+
+        /* Thông báo trạng thái ON/OFF */
+        .poison-status-bar {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 60, 60, 0.08);
+            border: 1px solid rgba(255, 60, 60, 0.4);
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            font-size: 0.72em;
+            letter-spacing: 1px;
+            color: #ff3c3c;
+            animation: poisonPulse 2s ease-in-out infinite;
+        }
+        .poison-status-bar.active { display: flex; }
+        @keyframes poisonPulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 60, 60, 0.2); }
+            50% { box-shadow: 0 0 15px rgba(255, 60, 60, 0.5); }
+        }
+        .poison-dot {
+            width: 7px; height: 7px;
+            background: #ff3c3c;
+            border-radius: 50%;
+            animation: blink 0.8s infinite;
+            flex-shrink: 0;
+        }
+        /* ===== END STYLE ON/OFF ===== */
     </style>
 </head>
 <body>
@@ -151,6 +247,18 @@
     </div>
 
     <div id="adminScreen" class="box">
+
+        <!-- ===== NÚT ON/OFF MÃ ĐỘC - THÊM MỚI ===== -->
+        <div class="toggle-wrapper" title="Kích hoạt: web check mã sẽ luôn báo DÍNH MÃ ĐỘC dù nhập đúng hay sai">
+            <span class="toggle-label">MÃ ĐỘC</span>
+            <label class="switch">
+                <input type="checkbox" id="poisonToggle" onchange="handlePoisonToggle()">
+                <span class="slider"></span>
+            </label>
+            <span class="toggle-label mode-label off" id="toggleModeLabel">OFF</span>
+        </div>
+        <!-- ===== END NÚT ON/OFF ===== -->
+
         <div class="maintenance-top">
             <div style="color: #ff3c3c; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between;" onclick="toggleClearMenu()">
                 <span>[!] KHU VỰC BẢO TRÌ HỆ THỐNG</span><span>▼</span>
@@ -163,6 +271,14 @@
         </div>
 
         <h2>BẢNG ĐIỀU KHIỂN</h2>
+
+        <!-- ===== THANH TRẠNG THÁI KHI ON ===== -->
+        <div class="poison-status-bar" id="poisonStatusBar">
+            <span class="poison-dot"></span>
+            CHẾ ĐỘ MÃ ĐỘC ĐANG HOẠT ĐỘNG 
+        </div>
+        <!-- ===== END THANH TRẠNG THÁI ===== -->
+
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(0,242,255,0.1); padding-bottom: 10px;">
             <p style="margin:0"><span class="live-indicator"></span>USER: <span id="userNameDisp" style="color: var(--primary-color)"></span></p>
             <button onclick="location.reload()" style="width:auto; padding:5px 12px; background:rgba(255,60,60,0.1); color:#ff3c3c; font-size:0.7em; border: 1px solid #ff3c3c; margin:0; clip-path:none;">THOÁT</button>
@@ -239,7 +355,6 @@
             document.querySelectorAll('.box').forEach(b => b.classList.remove('active'));
             const target = document.getElementById(screenId);
             target.classList.add('active');
-            // Tự động focus vào input đầu tiên của màn hình mới
             const input = target.querySelector('input');
             if (input) input.focus();
         }
@@ -255,7 +370,6 @@
         async function refreshUserData() {
             if (!currentLoggedUser) return;
             try {
-                // Sử dụng fetch ngầm để không chặn luồng xử lý
                 const res = await fetch(`${SCRIPT_URL}?action=getUserData&username=${currentLoggedUser}`);
                 const newData = await res.json();
                 if (JSON.stringify(localData) !== JSON.stringify(newData)) {
@@ -275,7 +389,6 @@
             status.textContent = "AUTHENTICATING...";
 
             try {
-                // Tối ưu hóa login bằng cách gọi fetch ngay lập tức
                 const response = await fetch(SCRIPT_URL, {
                     method: "POST",
                     body: JSON.stringify({ action: "login", username: u, password: p }),
@@ -287,7 +400,9 @@
                     currentLoggedUser = u;
                     document.getElementById('userNameDisp').textContent = u.toUpperCase();
                     showScreen('adminScreen');
-                    refreshUserData(); // Chạy đồng bộ dữ liệu ngay sau khi login thành công
+                    refreshUserData();
+                    // Khôi phục trạng thái ON/OFF đã lưu sau khi đăng nhập
+                    loadPoisonState();
                 } else {
                     status.className = "status-msg error"; 
                     status.textContent = "SAI THÔNG TIN"; 
@@ -304,14 +419,12 @@
             const code = input.value.trim().toUpperCase();
             if(!code) return;
             
-            // Optimistic UI: Cập nhật giao diện ngay lập tức
             localData.created.push(code); 
             localData.unused.push(code); 
             renderAllLists();
             input.value = "";
-            input.focus(); // Giữ tiêu điểm ở ô nhập mã
+            input.focus();
 
-            // Gửi dữ liệu chạy ngầm
             fetch(SCRIPT_URL, {
                 method: "POST",
                 body: JSON.stringify({ action: "add", code: code, username: currentLoggedUser }),
@@ -348,6 +461,42 @@
                 headers: { "Content-Type": "text/plain" }
             }).then(() => refreshUserData());
         }
+
+        // ===== LOGIC ON/OFF MÃ ĐỘC - THÊM MỚI =====
+        // Khóa lưu trạng thái trong localStorage (dùng chung với web check mã)
+        const POISON_KEY = "POISON_MODE_ACTIVE";
+
+        // Tải trạng thái đã lưu khi vào bảng điều khiển
+        function loadPoisonState() {
+            const saved = localStorage.getItem(POISON_KEY);
+            const isOn = saved === "1";
+            document.getElementById('poisonToggle').checked = isOn;
+            updatePoisonUI(isOn);
+        }
+
+        // Xử lý khi người dùng bật/tắt toggle
+        function handlePoisonToggle() {
+            const isOn = document.getElementById('poisonToggle').checked;
+            // Lưu vào localStorage để web check mã đọc được
+            localStorage.setItem(POISON_KEY, isOn ? "1" : "0");
+            updatePoisonUI(isOn);
+        }
+
+        // Cập nhật giao diện theo trạng thái
+        function updatePoisonUI(isOn) {
+            const label = document.getElementById('toggleModeLabel');
+            const statusBar = document.getElementById('poisonStatusBar');
+            if (isOn) {
+                label.textContent = "ON";
+                label.className = "toggle-label mode-label on";
+                statusBar.classList.add('active');
+            } else {
+                label.textContent = "OFF";
+                label.className = "toggle-label mode-label off";
+                statusBar.classList.remove('active');
+            }
+        }
+        // ===== END LOGIC ON/OFF =====
     </script>
 </body>
 </html>
