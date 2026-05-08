@@ -43,7 +43,6 @@
             width: 100%; max-width: 450px; display: none; 
             opacity: 0; transform: translate3d(0, 20px, 0);
             backdrop-filter: blur(10px);
-            /* TỐI ƯU: Giảm animation xuống 0.2s để chuyển màn nhanh hơn */
             transition: opacity 0.2s var(--ease-snap), transform 0.2s var(--ease-snap);
             border: 1px solid rgba(0, 242, 255, 0.2);
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
@@ -138,23 +137,23 @@
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-thumb { background: var(--primary-color); }
 
-        /* ===== STYLE NÚT ON/OFF ===== */
+        /* ===== THAY ĐỔI: CSS NÚT ON/OFF TO HƠN VÀ NỔI BẬT HƠN ===== */
         .toggle-wrapper {
             position: absolute;
-            top: -18px;
+            top: -24px;
             right: 20px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(2, 12, 22, 0.98);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 20px;
-            padding: 5px 12px;
+            gap: 12px;
+            background: rgba(2, 12, 22, 1);
+            border: 2px solid rgba(0, 242, 255, 0.4);
+            border-radius: 25px;
+            padding: 8px 18px;
             z-index: 10;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
         }
         .toggle-label {
-            font-size: 0.65em;
+            font-size: 0.75em;
             letter-spacing: 2px;
             color: rgba(196, 250, 255, 0.7);
             text-transform: uppercase;
@@ -162,50 +161,52 @@
             user-select: none;
         }
         .toggle-label.mode-label {
-            font-size: 0.7em;
+            font-size: 0.85em;
             letter-spacing: 1px;
-            transition: color 0.3s;
+            transition: color 0.3s, text-shadow 0.3s;
         }
         .toggle-label.mode-label.off { color: rgba(196, 250, 255, 0.5); }
-        .toggle-label.mode-label.on { color: #ff3c3c; text-shadow: 0 0 8px #ff3c3c; }
+        .toggle-label.mode-label.on { 
+            color: #ff3c3c; 
+            text-shadow: 0 0 10px #ff3c3c, 0 0 20px #ff3c3c; 
+        }
 
-        /* Switch toggle */
+        /* Switch toggle to hơn */
         .switch {
             position: relative;
-            width: 40px;
-            height: 20px;
+            width: 52px;
+            height: 26px;
         }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute;
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 242, 255, 0.4);
+            border-radius: 25px;
             transition: 0.3s;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 14px; width: 14px;
+            height: 18px; width: 18px;
             left: 2px; bottom: 2px;
             background: rgba(196, 250, 255, 0.5);
             border-radius: 50%;
             transition: 0.3s;
         }
         .switch input:checked + .slider {
-            background: rgba(255, 60, 60, 0.2);
+            background: rgba(255, 60, 60, 0.15);
             border-color: #ff3c3c;
-            box-shadow: 0 0 10px rgba(255, 60, 60, 0.5);
+            box-shadow: inset 0 0 10px rgba(255, 60, 60, 0.3), 0 0 15px rgba(255, 60, 60, 0.5);
         }
         .switch input:checked + .slider:before {
-            transform: translateX(20px);
+            transform: translateX(26px);
             background: #ff3c3c;
-            box-shadow: 0 0 8px #ff3c3c;
+            box-shadow: 0 0 10px #ff3c3c, 0 0 20px #ff3c3c;
         }
 
-        /* Thông báo trạng thái ON/OFF */
         .poison-status-bar {
             display: none;
             align-items: center;
@@ -226,12 +227,44 @@
             50% { box-shadow: 0 0 15px rgba(255, 60, 60, 0.5); }
         }
         .poison-dot {
-            width: 7px;
-            height: 7px;
-            background: #ff3c3c;
-            border-radius: 50%;
-            animation: blink 0.8s infinite;
-            flex-shrink: 0;
+            width: 7px; height: 7px; background: #ff3c3c; border-radius: 50%;
+            animation: blink 0.8s infinite; flex-shrink: 0;
+        }
+
+        /* ===== THAY ĐỔI: MEDIA QUERIES TỐI ƯU MOBILE ===== */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .box { 
+                padding: 25px 15px; 
+                margin-top: 15px; /* Tránh chạm sát viền trên màn hình */
+            }
+            
+            /* Căn lại nút toggle trên mobile để không lẹm viền */
+            .toggle-wrapper {
+                top: -18px;
+                right: 50%;
+                transform: translateX(50%); /* Căn giữa trên đỉnh màn nhỏ */
+                padding: 6px 12px;
+                gap: 8px;
+                background: rgba(2, 12, 22, 1);
+            }
+            .toggle-label { font-size: 0.65em; }
+            .toggle-label.mode-label { font-size: 0.75em; }
+            .switch { width: 44px; height: 22px; }
+            .slider:before { height: 14px; width: 14px; }
+            .switch input:checked + .slider:before { transform: translateX(22px); }
+
+            h2 { font-size: 1.1em; margin-top: 15px; }
+            
+            /* Tăng kích thước chạm cho input/button */
+            input { padding: 15px; font-size: 1.05em; }
+            button { padding: 16px; font-size: 1em; }
+            
+            /* Tối ưu danh sách mã code dễ đọc hơn */
+            .profile-container { gap: 20px; }
+            .code-section { padding: 12px; }
+            .code-list { height: 220px; font-size: 0.95em; }
+            .code-item { padding: 10px 0; } /* Rộng ra để dễ nhìn / dễ cuộn */
         }
     </style>
 </head>
@@ -346,7 +379,6 @@
                 const activeBox = document.querySelector('.box.active');
                 if (!activeBox) return;
 
-                // Tối ưu UX: Chuyển focus nhanh từ User sang Password
                 if (document.activeElement.id === 'userLogin') {
                     document.getElementById('passLogin').focus();
                     return;
@@ -372,20 +404,25 @@
             const target = document.getElementById(screenId);
             target.classList.add('active');
             
-            // Tối ưu: setTimeout nhẹ đảm bảo animation CSS chạy xong mới focus, tránh giật lag
             setTimeout(() => {
                 const input = target.querySelector('input');
                 if (input) input.focus();
             }, 50);
         }
 
+        // ===== THAY ĐỔI: SỬA LỖI HIỂN THỊ [object Object] =====
         function renderAllLists() {
             const render = (id, list) => {
                 const el = document.getElementById(id);
-                el.innerHTML = list.length ? list.map(c => `<div class="code-item">> ${c}</div>`).reverse().join('') : '<div style="opacity:0.2; padding:10px;">EMPTY</div>';
+                el.innerHTML = list.length ? list.map(c => {
+                    // Chiết xuất chuỗi code từ object do Server trả về, hoặc hiển thị trực tiếp nếu là string
+                    let codeText = (typeof c === 'object' && c !== null) ? c.code : c;
+                    return `<div class="code-item">> ${codeText}</div>`;
+                }).reverse().join('') : '<div style="opacity:0.2; padding:10px;">EMPTY</div>';
             };
             render('listCreated', localData.created); render('listUsed', localData.used); render('listUnused', localData.unused);
         }
+        // ===== KẾT THÚC SỬA LỖI =====
 
         async function refreshUserData() {
             if (!currentLoggedUser) return;
@@ -441,6 +478,7 @@
             const code = input.value.trim().toUpperCase();
             if(!code) return;
             
+            // Push string lên giao diện (sẽ được handle an toàn ở hàm render bên trên)
             localData.created.push(code); 
             localData.unused.push(code); 
             renderAllLists();
@@ -489,21 +527,15 @@
             }).then(() => refreshUserData());
         }
 
-        // ===== LOGIC ON/OFF MÃ ĐỘC ĐÃ CẬP NHẬT =====
+        // ===== LOGIC ON/OFF MÃ ĐỘC =====
         const POISON_KEY = "POISON_MODE_ACTIVE";
-
-        // Tải trạng thái đồng bộ từ Server khi vào bảng điều khiển
+        
         async function loadPoisonState() {
             try {
-                // Fetch trạng thái từ Apps Script Server
                 const res = await fetch(`${SCRIPT_URL}?action=getOnOff`);
                 const data = await res.json();
                 const isOn = (data.state === "ON");
-                
-                // Lưu đồng bộ vào localStorage
                 localStorage.setItem(POISON_KEY, isOn ? "1" : "0");
-                
-                // Cập nhật giao diện
                 document.getElementById('poisonToggle').checked = isOn;
                 updatePoisonUI(isOn);
             } catch (e) {
@@ -515,16 +547,13 @@
             }
         }
 
-        // Xử lý khi bật/tắt Toggle: Cập nhật UI ngay lập tức + Đẩy API lên server
         function handlePoisonToggle() {
             const isOn = document.getElementById('poisonToggle').checked;
             const stateStr = isOn ? "ON" : "OFF";
             
-            // Cập nhật Local Storage và UI tức thì
             localStorage.setItem(POISON_KEY, isOn ? "1" : "0");
             updatePoisonUI(isOn);
             
-            // Bắn tín hiệu đẩy lên Server
             fetch(SCRIPT_URL, {
                 method: "POST",
                 body: JSON.stringify({ action: "setOnOff", state: stateStr }),
@@ -532,7 +561,6 @@
             }).catch(e => console.error("Lỗi đồng bộ ON/OFF lên server: ", e));
         }
 
-        // Cập nhật CSS/UI theo trạng thái
         function updatePoisonUI(isOn) {
             const label = document.getElementById('toggleModeLabel');
             const statusBar = document.getElementById('poisonStatusBar');
